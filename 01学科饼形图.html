@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+  <canvas width="600px" height="400px" style="border: 1px solid #000;"></canvas>
+</body>
+<script>
+  var cs=document.querySelector('canvas');
+  var ctx=cs.getContext('2d');//获取绘图上下文
+
+  function  getRadian(deg) { //获取弧度
+    return  deg*Math.PI/180;
+  }
+
+  function getColor(){ //获取颜色
+    return 'rgba('+parseInt(Math.random()*255)+','+parseInt(Math.random()*255)+','+parseInt(Math.random()*255)+',1)';
+  }
+  var data=[
+    {
+      num:1200,
+      name:"语文24%"
+    },
+    {
+      num:684,
+      name:"数学14%"
+    },
+    {
+      num:860,
+      name:"英语17%"
+    },
+    {
+      num:1060,
+      name:"历史21%"
+    },
+    {
+      num:680,
+      name:"化学13%"
+    },
+    {
+      num:570,
+      name:"地理11%"
+    }
+  ]
+  var x=cs.width/2;
+  var y=cs.height/2;
+  var r=150;
+  var out=30;
+  //根据每个学科的人数/总人数  获取每个学科所占的比例，从而求圆弧的角度
+  var sum=0;
+  data.map(function(v){ //求总和
+    sum += v.num;   /*v.num/sum*360便是圆弧的角度*/
+  })
+  /*map方法 对数组的每个元素调用定义的 回调函数，并返回包含返回值的数组
+  * 对数组中每个元素用指定的方法（就是那个回调函数）
+  * 回调函数语法：function callbackfn(value,index,array)
+  * value:数组元素的值
+  * index：数组元素的数字索引（下标）
+  * array：包含元素的数组对象*/
+
+  //算出每个数据的对应的弧度
+  var angles=[]; /*存放所有数据的弧度*/
+  angles= data.map(function(v,i,arr){
+    console.log(v.num/sum);
+    return getRadian(v.num/sum*360);
+  })
+  console.log(angles);
+
+
+
+  //根据弧度画出圆弧
+  var startAngle=getRadian(-90); /*起始弧度*/
+  for(var i=0;i<angles.length;i++){
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, r, startAngle, startAngle + angles[i]);
+    var color=getColor();
+    ctx.fillStyle=color; //获取颜色
+    ctx.fill();
+
+
+    //绘制当前圆弧对应线条(半径延长线)
+    var lineAngle=startAngle+angles[i]/2; /*当前圆弧中线位置对应的弧度*/
+    var x1=x+(r+out)*Math.cos(lineAngle);
+    var y1=y+(r+out)*Math.sin(lineAngle);
+    ctx.strokeStyle=color;
+    ctx.moveTo(x,y);
+    ctx.lineTo(x1,y1); //半径延长线
+    ctx.stroke();
+
+
+    //判断横线向左还是向右
+    var x2=0;
+    ctx.font="20px  微软雅黑";  /*注意：字体要先设置 再取字体宽度*/
+    var width=ctx.measureText(data[i].name).width; /*获取当前文字的宽度也是横线的宽度*/
+    if(x1>x){  /*半径延长线终点在右边*/
+      x2=x1+width;
+      ctx.textAlign='left';
+    }else{   /*半径延长线终点在左边*/
+      x2=x1-width;
+      ctx.textAlign='right';
+    }
+
+    //画出横线,绘制文字
+    ctx.lineTo(x2,y1);
+    ctx.fillStyle=color;
+    ctx.fillText(data[i].name,x1,y1-10);
+    ctx.stroke();
+
+    startAngle+=angles[i];/*下一个数据（扇形）绘制的起始位置*/
+    ctx.beginPath();
+
+
+
+  }
+</script>
+</html>

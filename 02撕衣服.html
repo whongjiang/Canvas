@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    canvas{
+      display: block;
+      margin:50px auto 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas width="320" height="480" style="border: 1px solid #000;"></canvas>
+</body>
+</html>
+<script>
+  var cs=document.querySelector('canvas');
+  var ctx=cs.getContext('2d');
+
+  var upImg=new Image();
+  var backImg=new Image();
+  var isRip=false; //是否开撕（初始值设为否）
+
+  upImg.src="img/g15_up.jpg";
+  backImg.src="img/g15_back.jpg";
+  upImg.onload=function(){
+    ctx.drawImage(upImg,0,0,cs.width,cs.height); //画上面的图片
+  }
+
+  cs.onmousedown=function(){
+    isRip=true;
+  }
+  cs.onmouseup=function(){
+    isRip=false;
+  }
+  var w=20;
+  var h=20;
+  cs.onmousemove=function(e){
+    //鼠标落点相对于canvas的坐标
+    if(isRip){
+      var x=e.clientX-cs.offsetLeft;
+      var y=e.clientY-cs.offsetTop;
+    }
+    //在canvas上面画 backImage对应的区域即可
+    ctx.drawImage(backImg,x,y,w,h,x,y,w,h)
+    /*当鼠标在canvas上移动时，从backImg的（x,y）处截取（w,h）大小的区域，
+    * 把截图画到canvas的（x,y）点处，且大小也是（w,h）*/
+  }
+
+
+
+
+
+
+</script>
